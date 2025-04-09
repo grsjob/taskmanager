@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/auth-proxy': {
-          target: env.VITE_AUTH_URL, // Используем значение из .env
+          target: env.VITE_AUTH_URL,
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/auth-proxy/, ''),
@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => {
           }
         },
         '/api-proxy': {
-          target: env.VITE_BASE_URL, // Используем значение из .env
+          target: env.VITE_BASE_URL,
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/api-proxy/, ''),

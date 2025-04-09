@@ -24,9 +24,8 @@ export class LLM {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
 
-        // Инициализация отдельных инстансов для auth и api
         this.authAxios = axios.create({
-            baseURL: '/auth-proxy', // Прокси для авторизации
+            baseURL: '/auth-proxy',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Accept': 'application/json'
@@ -34,7 +33,7 @@ export class LLM {
         });
 
         this.apiAxios = axios.create({
-            baseURL: '/api-proxy', // Прокси для API
+            baseURL: '/api-proxy',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -181,7 +180,7 @@ export class LLM {
 
     private isTokenExpired(): boolean {
         if (!this.token) return true;
-        // Добавьте логику проверки срока действия токена при необходимости
+        // здесь должна быть логика проверки токена по времени жизни
         return false;
     }
 

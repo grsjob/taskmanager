@@ -1,33 +1,62 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import {useEffect, useState} from 'react'
 import './App.css'
+import {LLM} from "./LLM/LLM.ts";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [llm, setLlm] = useState<LLM | null>(null);
+
+    const handleGetModels = async () => {
+        try {
+            if (llm) {
+                const models = await llm.getModels();
+                console.log('Models:', models);
+            }
+        } catch (error) {
+            console.error('Error fetching models:', error);
+        }
+    };
+
+    const chatCompletion = async (req: string) => {
+        try {
+            if (llm) {
+                const response = await llm.chatCompletion(req);
+                console.log('response:', response);
+            }
+        } catch (error) {
+            console.error('Error chatCompletion:', error);
+        }
+    }
+    useEffect(() => {
+        const initLLM = async () => {
+            try {
+                const clientId = import.meta.env.VITE_GIGACHAT_CLIENT_ID || 'YOUR_CLIENT_ID';
+                const clientSecret = import.meta.env.VITE_GIGACHAT_CLIENT_SECRET || 'YOUR_CLIENT_SECRET';
+                const baseURL = import.meta.env.VITE_BASE_URL || 'YOUR_CLIENT_SECRET';
+
+                if (!clientId || !clientSecret || !baseURL) {
+                    throw new Error('Не заданы Client ID или Client Secret или Base URL');
+                }
+
+                const instance = new LLM(clientId, clientSecret,baseURL);
+                console.log("initLLM", instance);
+                const isConnected = await instance.testConnection();
+                if (!isConnected) {
+                    throw new Error('Не удалось подключиться к GigaChat API');
+                }
+
+                setLlm(instance);
+            } catch (err) {
+                console.error('Ошибка:', err);
+            }
+        };
+
+        initLLM();
+    }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+     <button onClick={()=> handleGetModels()}> Получить модели</button>
+     <button onClick={()=> chatCompletion('Напоминай сдавать отчёт каждый последний день месяца в 12:00 за неделю и за день')}> Тест расписания</button>
     </>
   )
 }
